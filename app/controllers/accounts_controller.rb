@@ -7,11 +7,19 @@ class AccountsController < ApplicationController
 
     @account = Account.new
     @account.build_owner
+
+    @plans = Plan.all
+    @client_token = Braintree::ClientToken.generate
+
   end
 
   def create
     @account = Account.new(account_params)
     if @account.save
+      result = Braintree::Transaction.sale(
+        :amount => "100.00",
+        :payment_method_nonce => params[:payment_method_nonce]
+      )
       sign_in(@account.owner)
       flash[:notice] = "Your account has been successfully created."
       redirect_to root_url(subdomain: @account.subdomain)

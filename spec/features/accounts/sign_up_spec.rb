@@ -1,14 +1,27 @@
 require "rails_helper"
 
 feature "Accounts" do
-  scenario "creating an account" do
-    visit root_path
+  let!(:plan) do
+    Plan.create(
+      name: "Starter", 
+      price: "9.99",
+      braintree_id: "starter",
+    )
+  end
+
+  scenario "creating an account", js: true do
+    no_subdomain
+    visit root_url
     click_link "Create a new account"
     fill_in "Name", with: "Test"
     fill_in "Subdomain", with: "test"
     fill_in "Email", with: "test@example.com"
     fill_in "Password", with: "password"
     fill_in "Password confirmation", with: "password"
+    within_frame 'braintree-dropin-frame' do
+      fill_in 'credit-card-number', with: "4111 1111 1111 1111"
+      fill_in 'expiration', with: "01 / #{Time.now.year + 1}"
+    end
     click_button "Create Account"
 
     success_message = "Your account has been successfully created."
@@ -27,6 +40,7 @@ feature "Accounts" do
     fill_in "Email", with: "test@example.com"
     fill_in "Password", with: "password"
     fill_in "Password confirmation", with: 'password'
+
     click_button "Create Account"
 
     expect(page.current_url).to eq("http://lvh.me/accounts")
