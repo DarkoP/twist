@@ -10,7 +10,7 @@ feature "Accounts" do
   end
 
   scenario "creating an account", js: true do
-    no_subdomain
+    set_default_host
     visit root_url
     click_link "Create a new account"
     fill_in "Name", with: "Test"
@@ -18,16 +18,25 @@ feature "Accounts" do
     fill_in "Email", with: "test@example.com"
     fill_in "Password", with: "password"
     fill_in "Password confirmation", with: "password"
-    within_frame 'braintree-dropin-frame' do
-      fill_in 'credit-card-number', with: "4111 1111 1111 1111"
-      fill_in 'expiration', with: "01 / #{Time.now.year + 1}"
+    choose "Starter"
+
+    within_frame "braintree-dropin-frame" do
+      fill_in "credit-card-number", with: "4242 4242 4242 4242"
+      fill_in "expiration", with: "01 / #{Time.now.year + 1}"
+      fill_in "cvv", with: "123"
     end
     click_button "Create Account"
 
-    success_message = "Your account has been successfully created."
-    expect(page).to have_content(success_message)
+    sleep(3)
+
+    within(".flash_notice") do
+      success_message = "Your account has been successfully created."
+      expect(page).to have_content(success_message)
+    end
+
     expect(page).to have_content("Signed in as test@example.com")
-    expect(page.current_url).to eq("http://test.lvh.me/")
+    port = Capybara.current_session.server.port
+    expect(page.current_url).to eq("http://test.lvh.me:#{port}/")
   end
 
   scenario "Ensure subdomain uniqueness" do

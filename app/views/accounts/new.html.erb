@@ -18,10 +18,7 @@
         <%= account.radio_button :plan_id, plan.id %>
         <%= account.label "plan_id_#{plan.id}", plan.name %> ($<%= plan.price %>)<br>
       <% end %>
-
-      <div id='payment-form'>
-        <h4>Enter your payment details</h4>
-      </div>
+      <div id="payment-form"></div>
       <%= account.submit class: "btn btn-primary" %>
     </div>
   <% end %>
@@ -29,7 +26,9 @@
 
 <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
 <script>
-braintree.setup("<%= @client_token %>", "dropin", {
+var clientToken = "<%= @client_token %>";
+
+braintree.setup(clientToken, "dropin", {
   container: "payment-form"
 });
 </script>

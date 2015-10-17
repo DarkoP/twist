@@ -1,17 +1,17 @@
 module SubdomainHelpers
+  def set_default_host
+    Capybara.app_host = "http://lvh.me"
+    Capybara.always_include_port = true
+
+    default_url_options[:host] = "lvh.me"
+  end
+
   def set_subdomain(subdomain)
     site = "#{subdomain}.lvh.me"
     Capybara.app_host = "http://#{site}"
     Capybara.always_include_port = true
 
     default_url_options[:host] = "#{site}"
-  end
-
-  def no_subdomain
-    Capybara.app_host = "http://lvh.me"
-    Capybara.always_include_port = true
-
-    default_url_options[:host] = "lvh.me"
   end
 end
 
