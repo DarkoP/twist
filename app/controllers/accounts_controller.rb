@@ -7,9 +7,6 @@ class AccountsController < ApplicationController
 
     @account = Account.new
     @account.build_owner
-
-    @plans = Plan.all
-    @client_token = Braintree::ClientToken.generate
   end
 
   def create

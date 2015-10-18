@@ -1,8 +1,8 @@
 <div class='row'>
-  <%= simple_form_for @account, id: "payment-form" do |account| %>
-    <div class='col-md-offset-2 col-md-4 content'>
-      <h2>Create a new account</h2>
+  <div class='col-md-offset-4 col-md-4 content'>
+    <h2>Create a new account</h2>
 
+    <%= simple_form_for(@account) do |account| %>
       <%= account.input :name %>
       <%= account.input :subdomain %>
 
@@ -11,24 +11,7 @@
         <%= owner.input :password %>
         <%= owner.input :password_confirmation %>
       <% end %>
-    </div>
-    <div class='col-md-4 content'>
-      <h3>Select a plan</h3>
-      <% @plans.each do |plan| %>
-        <%= account.radio_button :plan_id, plan.id %>
-        <%= account.label "plan_id_#{plan.id}", plan.name %> ($<%= plan.price %>)<br>
-      <% end %>
-      <div id="payment-form"></div>
       <%= account.submit class: "btn btn-primary" %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 </div>
-
-<script src="https://js.braintreegateway.com/v2/braintree.js"></script>
-<script>
-var clientToken = "<%= @client_token %>";
-
-braintree.setup(clientToken, "dropin", {
-  container: "payment-form"
-});
-</script>
