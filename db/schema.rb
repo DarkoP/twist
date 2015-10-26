@@ -11,11 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20151011212918) do
+=======
+ActiveRecord::Schema.define(version: 20150907031755) do
+>>>>>>> master
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+<<<<<<< HEAD
   create_table "accounts", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -32,6 +37,8 @@ ActiveRecord::Schema.define(version: 20151011212918) do
     t.integer "user_id"
   end
 
+=======
+>>>>>>> master
   create_table "books", force: :cascade do |t|
     t.integer  "account"
     t.string   "path"
