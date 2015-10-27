@@ -4,6 +4,7 @@ class Accounts::PlansController < Accounts::BaseController
     @client_token = Braintree::ClientToken.generate(
       customer_id: current_account.braintree_customer_id
     )
+    render :choose
   end
 
   def chosen
@@ -12,13 +13,16 @@ class Accounts::PlansController < Accounts::BaseController
       payment_method_nonce: params[:payment_method_nonce],
       plan_id: plan.braintree_id
     )
-    Rails.logger.info(result.inspect)
     if result.success?
       current_account.braintree_subscription_id = result.subscription.id
       current_account.plan = plan
       current_account.save
       flash[:notice] = "Your account has been successfully created."
       redirect_to root_url(subdomain: current_account.subdomain)
+    else
+      binding.pry
+      flash[:alert] = "Subscription failed."
+      choose
     end
   end
 end

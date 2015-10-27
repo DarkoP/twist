@@ -3,9 +3,9 @@ require "rails_helper"
 feature "Accounts" do
   let!(:plan) do
     Plan.create(
-      name: "Starter", 
-      price: "9.99",
-      braintree_id: "starter",
+      name: "Starter",
+      price: 9.95,
+      braintree_id: "6w36"
     )
   end
 
@@ -18,6 +18,11 @@ feature "Accounts" do
     fill_in "Email", with: "test@example.com"
     fill_in "Password", with: "password"
     fill_in "Password confirmation", with: "password"
+    click_button "Next"
+
+    account = Account.last
+    expect(account.braintree_customer_id).to be_present
+    expect(page.current_url).to eq(choose_plan_url(subdomain: "test"))
     choose "Starter"
 
     within_frame "braintree-dropin-frame" do
@@ -25,9 +30,12 @@ feature "Accounts" do
       fill_in "expiration", with: "01 / #{Time.now.year + 1}"
       fill_in "cvv", with: "123"
     end
-    click_button "Create Account"
 
-    sleep(3)
+    click_button "Finish"
+    sleep(5)
+
+    expect(account.plan).to eq(plan)
+    expect(account.braintree_subscription_id).to_not be_blank
 
     within(".flash_notice") do
       success_message = "Your account has been successfully created."
@@ -35,8 +43,7 @@ feature "Accounts" do
     end
 
     expect(page).to have_content("Signed in as test@example.com")
-    port = Capybara.current_session.server.port
-    expect(page.current_url).to eq("http://test.lvh.me:#{port}/")
+    expect(page.current_url).to eq(root_url(subdomain: "test"))
   end
 
   scenario "Ensure subdomain uniqueness" do

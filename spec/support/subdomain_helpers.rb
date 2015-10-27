@@ -3,7 +3,9 @@ module SubdomainHelpers
     Capybara.app_host = "http://lvh.me"
     Capybara.always_include_port = true
 
+    port = Capybara.current_session.server.port
     default_url_options[:host] = "lvh.me"
+    default_url_options[:port] = port
   end
 
   def set_subdomain(subdomain)
