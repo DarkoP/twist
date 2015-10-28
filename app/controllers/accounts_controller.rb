@@ -19,7 +19,7 @@ class AccountsController < ApplicationController
       sign_in(@account.owner)
       redirect_to choose_plan_url(subdomain: @account.subdomain)
     else
-      flash[:alert] = "Sorry, your account could not be created."
+      flash.now[:alert] = "Sorry, your account could not be created."
       render :new
     end
   end
