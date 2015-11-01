@@ -242,4 +242,14 @@ end
     output = render(footnote_within_paragraph)
     expect(output.css("a sup").text).to eq("1")
   end
+
+  it "can process an ordered list" do
+    ordered_list = %Q{
+1. First
+2. Second
+3. Third
+    }
+    output = render(ordered_list)
+    expect(output).to eq("omg")
+  end
 end
