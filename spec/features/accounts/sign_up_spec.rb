@@ -46,6 +46,44 @@ feature "Accounts" do
     expect(page.current_url).to eq(root_url(subdomain: "test"))
   end
 
+  scenario "when a subscription fails", js: true do
+    Plan.create(
+      name: "Failure",
+      price: 2002,
+      braintree_id: "md22"
+    )
+
+    set_default_host
+    visit root_url
+    click_link "Create a new account"
+    fill_in "Name", with: "Test"
+    fill_in "Subdomain", with: "test"
+    fill_in "Email", with: "test@example.com"
+    fill_in "Password", with: "password"
+    fill_in "Password confirmation", with: "password"
+    click_button "Next"
+
+    account = Account.last
+    expect(account.braintree_customer_id).to be_present
+    expect(page.current_url).to eq(choose_plan_url(subdomain: "test"))
+    choose "Failure"
+
+    within_frame "braintree-dropin-frame" do
+      fill_in "credit-card-number", with: "4242 4242 4242 4242"
+      fill_in "expiration", with: "01 / #{Time.now.year + 1}"
+      fill_in "cvv", with: "123"
+    end
+
+    click_button "Finish"
+    sleep(5)
+    within(".flash_alert") do
+      failure_message = "Subscription failed: Limit Exceeded"
+      expect(page).to have_content(failure_message)
+    end
+
+    expect(page.current_url).to eq(choose_plan_url(subdomain: "test"))
+  end
+
   scenario "Ensure subdomain uniqueness" do
     Account.create!(subdomain: "test", name: "Test")
 

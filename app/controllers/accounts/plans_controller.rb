@@ -1,4 +1,6 @@
 class Accounts::PlansController < Accounts::BaseController
+  skip_before_action :subscription_required!
+
   def choose
     @plans = Plan.all
     @client_token = Braintree::ClientToken.generate(
@@ -20,8 +22,7 @@ class Accounts::PlansController < Accounts::BaseController
       flash[:notice] = "Your account has been successfully created."
       redirect_to root_url(subdomain: current_account.subdomain)
     else
-      binding.pry
-      flash[:alert] = "Subscription failed."
+      flash[:alert] = "Subscription failed: #{result.message}"
       choose
     end
   end
